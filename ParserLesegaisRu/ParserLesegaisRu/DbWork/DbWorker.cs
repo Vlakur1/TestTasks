@@ -68,13 +68,14 @@ namespace ParserLesegaisRu.DbWork
             using var command = new SqlCommand(AddDeclarationProcedureName, connection);
             command.CommandType = CommandType.StoredProcedure;
 
-            command.Parameters.Add(DealNumberParam, SqlDbType.NVarChar).Value = declaration.DealNumber;
-            command.Parameters.Add(SellerNameParam, SqlDbType.NVarChar).Value = declaration.SellerName;
-            command.Parameters.Add(SellerINNParam, SqlDbType.NVarChar).Value = declaration.SellerINN;
-            command.Parameters.Add(CustomerNameParam, SqlDbType.NVarChar).Value = declaration.CustomerName;
-            command.Parameters.Add(CustomerINNParam, SqlDbType.NVarChar).Value = declaration.CustomerINN;
-            command.Parameters.Add(DealDateParam, SqlDbType.Date).Value = declaration.DealDate;
-            command.Parameters.Add(VolumeByReportParam, SqlDbType.NVarChar).Value = declaration.VolumeByReport;
+            command.Parameters.Add(DealNumber, SqlDbType.NVarChar).Value = declaration.DealNumber ?? "";
+            command.Parameters.Add(SellerName, SqlDbType.NVarChar).Value = declaration.SellerName ?? "";
+            command.Parameters.Add(SellerINN, SqlDbType.NVarChar).Value = declaration.SellerINN ?? "";
+            command.Parameters.Add(BuyerName, SqlDbType.NVarChar).Value = declaration.BuyerName ?? "";
+            command.Parameters.Add(BuyerINN, SqlDbType.NVarChar).Value = declaration.BuyerINN ?? "";
+            command.Parameters.Add(DealDate, SqlDbType.Date).Value = declaration.DealDate ?? "";
+            command.Parameters.Add(BuyerVolume, SqlDbType.NVarChar).Value = declaration.BuyerVolume ?? "";
+            command.Parameters.Add(SellerVolume, SqlDbType.NVarChar).Value = declaration.SellerVolume ?? "";
 
             //command.ExecuteNonQuery();
             command.ExecuteScalar();
@@ -95,7 +96,7 @@ namespace ParserLesegaisRu.DbWork
                     AddDeal(declaration, connection);
                 }
             }
-            finally 
+            finally
             {
                 connection.Close();
             }

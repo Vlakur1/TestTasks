@@ -9,8 +9,8 @@ namespace ParserLesegaisRu
         DealNumber,
         SellerName,
         SellerINN,
-        Customer,
-        CustomerINN,
+        Buyer,
+        BuyerINN,
         DealDate,
         VolumeByReport
     }

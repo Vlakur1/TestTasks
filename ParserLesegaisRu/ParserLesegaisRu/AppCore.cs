@@ -10,17 +10,21 @@ namespace ParserLesegaisRu
     {
         private readonly DbWorker _dBWorker;
         private readonly Parser _parser;
+        private const int PageSize = 1000;
+        private int currentPage = 1;
         
+
 
         const string WelcomeMessage = @"This App parse site Lesegais.Ru";
         const string WorkFailMessage = @"Program execution was terminated!";
         const string UrlForParsing = @"https://www.lesegais.ru/open-area/deal";
+        //const string UrlForParsing = @"https://www.google.com";
         //const string UrlForParsing = @"c:\Users\Vladimir\Downloads\lesegaisru-page1.mhtml";
 
         public AppCore()
         {
             _dBWorker = new DbWorker();
-            _parser = new Parser(UrlForParsing);
+            _parser = new Parser(UrlForParsing, PageSize);
         }
 
         public void StartApplication()
@@ -30,10 +34,20 @@ namespace ParserLesegaisRu
             try
             {
 
-                while (_parser.GetNextPageData(out List<Declaration> dealsDataList))
+                //while (_parser.GetNextPageData(out List<Declaration> dealsDataList))
+                //{
+                //    _dBWorker.AddDealRange(dealsDataList);
+                //}
+
+
+                while (_parser.TryFetchPageRecords(UrlForParsing, currentPage, PageSize, out List<Declaration> dealsDataList) && Console.KeyAvailable==false)
                 {
+                    Console.WriteLine("Page Num = "+ currentPage + " Records: "+ (currentPage-1)*PageSize +"-"+ currentPage * PageSize);
                     _dBWorker.AddDealRange(dealsDataList);
+                    currentPage++;
                 }
+
+
 
                 //var task = parser.LoadPageAsync(UrlForParsing);
 
@@ -67,7 +81,7 @@ namespace ParserLesegaisRu
                     innerException = innerException.InnerException;
                 }
             }
-            finally 
+            finally
             {
                 _parser.Dispose();
             }
