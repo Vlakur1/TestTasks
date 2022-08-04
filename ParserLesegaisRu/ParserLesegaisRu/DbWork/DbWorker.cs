@@ -18,11 +18,13 @@ namespace ParserLesegaisRu.DbWork
             InitializeDateBase();
         }
 
+
         private void EnsureDbCreation()
         {
             using var connection = new SqlConnection(_connectionString);
             ExecuteSqlQuery(connection, CreateDataBaseQuery);
         }
+
 
         private void InitializeDateBase()
         {
@@ -47,6 +49,7 @@ namespace ParserLesegaisRu.DbWork
             command.ExecuteNonQuery();
         }
 
+
         private bool IsExistStoredProcedure(SqlConnection connection)
         {
             using var command = new SqlCommand(CheckIsStoredProcedureExist, connection);
@@ -56,6 +59,7 @@ namespace ParserLesegaisRu.DbWork
             }
             return (bool)command.ExecuteScalar();
         }
+
 
         private void AddDeal(Declaration declaration, SqlConnection connection)
         {
@@ -68,26 +72,21 @@ namespace ParserLesegaisRu.DbWork
             using var command = new SqlCommand(AddDeclarationProcedureName, connection);
             command.CommandType = CommandType.StoredProcedure;
 
-            command.Parameters.Add(DealNumber, SqlDbType.NVarChar).Value = declaration.DealNumber ?? "";
-            command.Parameters.Add(SellerName, SqlDbType.NVarChar).Value = declaration.SellerName ?? "";
-            command.Parameters.Add(SellerINN, SqlDbType.NVarChar).Value = declaration.SellerINN ?? "";
-            command.Parameters.Add(BuyerName, SqlDbType.NVarChar).Value = declaration.BuyerName ?? "";
-            command.Parameters.Add(BuyerINN, SqlDbType.NVarChar).Value = declaration.BuyerINN ?? "";
-            command.Parameters.Add(DealDate, SqlDbType.Date).Value = declaration.DealDate ?? "";
-            command.Parameters.Add(BuyerVolume, SqlDbType.NVarChar).Value = declaration.BuyerVolume ?? "";
-            command.Parameters.Add(SellerVolume, SqlDbType.NVarChar).Value = declaration.SellerVolume ?? "";
+            command.Parameters.Add(DealNumber, SqlDbType.NVarChar).Value = declaration.DealNumber;
+            command.Parameters.Add(DealDate, SqlDbType.Date).Value = declaration.DealDate ?? Convert.DBNull;
+            command.Parameters.Add(SellerName, SqlDbType.NVarChar).Value = declaration.SellerName;
+            command.Parameters.Add(SellerINN, SqlDbType.NVarChar).Value = declaration.SellerINN;
+            command.Parameters.Add(BuyerName, SqlDbType.NVarChar).Value = declaration.BuyerName;
+            command.Parameters.Add(BuyerINN, SqlDbType.NVarChar).Value = declaration.BuyerINN;
+            command.Parameters.Add(BuyerVolume, SqlDbType.NVarChar).Value = declaration.BuyerVolume;
+            command.Parameters.Add(SellerVolume, SqlDbType.NVarChar).Value = declaration.SellerVolume;
 
-            //command.ExecuteNonQuery();
-            command.ExecuteScalar();
-            //Console.WriteLine(declaration.SellerName+" Result = "+ command.ExecuteScalar());
-
-
+            command.ExecuteNonQuery();
         }
+
 
         public void AddDealRange(List<Declaration> declarations)
         {
-            Console.WriteLine(Environment.NewLine + "Старт добавления полученных строк в базу: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
-
             using var connection = new SqlConnection(_connectionString);
             try
             {
@@ -100,8 +99,6 @@ namespace ParserLesegaisRu.DbWork
             {
                 connection.Close();
             }
-
-            Console.WriteLine("Финиш добавления полученных строк в базу: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
         }
     }
 }

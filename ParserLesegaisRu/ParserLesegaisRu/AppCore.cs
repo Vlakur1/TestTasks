@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using ParserLesegaisRu.DbWork;
 
@@ -10,68 +9,68 @@ namespace ParserLesegaisRu
     {
         private readonly DbWorker _dBWorker;
         private readonly Parser _parser;
-        private const int PageSize = 1000;
-        private int currentPage = 1;
-        
+        private const string UrlForParsing = @"https://www.lesegais.ru/open-area/deal";
+        private const int PageSize = 10000;
+        private const int SecondInMinute = 60;
+        private const int WaitSecond = 600;
+        private const int MilliseconsInSecond = 1000;
 
+        private const string WelcomeMessage = "\n This App parses the Lesegais.Ru site, to exit - press any key\n";
+        private const string WorkFailMessage = @"Program execution was terminated!";
+        private const string WaitExecutionMessage = @"Waiting {0}  minutes {1} seconds until next site parsing, to exit - press any key.";
+        private const string ElapsedTimeMessage = @"Elapsed - {0} sec";
+        private const string CurentPageInformationTimeMessage = @"Page Num = {0}, Records: {1}-{2}";
+        private const string StartWriteRecordsToDbMessage = @"Start adding rows to the database: ";
+        private const string FinishWriteRecordsToDbMessage = @"Finish adding rows to the database: ";
 
-        const string WelcomeMessage = @"This App parse site Lesegais.Ru";
-        const string WorkFailMessage = @"Program execution was terminated!";
-        const string UrlForParsing = @"https://www.lesegais.ru/open-area/deal";
-        //const string UrlForParsing = @"https://www.google.com";
-        //const string UrlForParsing = @"c:\Users\Vladimir\Downloads\lesegaisru-page1.mhtml";
+        private int currentPage;
+        private int counterOfSeconds;
 
         public AppCore()
         {
             _dBWorker = new DbWorker();
-            _parser = new Parser(UrlForParsing, PageSize);
+            _parser = new Parser(UrlForParsing);
         }
+
 
         public void StartApplication()
         {
             Console.WriteLine(WelcomeMessage);
-
             try
             {
-
-                //while (_parser.GetNextPageData(out List<Declaration> dealsDataList))
-                //{
-                //    _dBWorker.AddDealRange(dealsDataList);
-                //}
-
-
-                while (_parser.TryFetchPageRecords(UrlForParsing, currentPage, PageSize, out List<Declaration> dealsDataList) && Console.KeyAvailable==false)
+                do
                 {
-                    Console.WriteLine("Page Num = "+ currentPage + " Records: "+ (currentPage-1)*PageSize +"-"+ currentPage * PageSize);
-                    _dBWorker.AddDealRange(dealsDataList);
-                    currentPage++;
-                }
+                    currentPage = 0;
 
+                    while (_parser.TryFetchPageRecords(currentPage, PageSize, out List<Declaration> dealsDataList) && Console.KeyAvailable == false)
+                    {
+                        Console.WriteLine(CurentPageInformationTimeMessage, currentPage+1, currentPage * PageSize, (currentPage+1) * PageSize);
+                        Console.WriteLine(StartWriteRecordsToDbMessage + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
 
+                        _dBWorker.AddDealRange(dealsDataList);
+                        Console.WriteLine(FinishWriteRecordsToDbMessage + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + Environment.NewLine);
 
-                //var task = parser.LoadPageAsync(UrlForParsing);
+                        currentPage++;
+                    }
 
-                //Console.WriteLine("While site is beeing parsed let's draw asterisks");
-                //var counter = 1;
-                //var maxCounter = 20;
-                //var strBilder = new StringBuilder(maxCounter * 2);
+                    Console.WriteLine(WaitExecutionMessage, WaitSecond / SecondInMinute, WaitSecond % SecondInMinute);
+                    var consoleCursorTopPosition = Console.CursorTop;
+                    counterOfSeconds = 0;
 
-                //while (!task.IsCompleted)
-                //{
-                //    strBilder.Append(' ', maxCounter - counter);
-                //    strBilder.Append('*', counter);
-                //    Console.WriteLine(strBilder.ToString());
-                //    counter = ((counter + 2) % 20);
-                //    Thread.Sleep(100);
-                //    strBilder.Clear();
-                //}
+                    while (Console.KeyAvailable == false && counterOfSeconds < WaitSecond)
+                    {
+                        Console.SetCursorPosition(2, consoleCursorTopPosition);
+                        Console.Write(ElapsedTimeMessage, ++counterOfSeconds);
+                        Thread.Sleep(MilliseconsInSecond);
+                    }
+                    Console.WriteLine();
 
+                } while (counterOfSeconds == WaitSecond && Console.KeyAvailable == false);
             }
             catch (Exception e)
             {
                 Console.WriteLine(WorkFailMessage + Environment.NewLine);
                 Console.WriteLine(e.Message + Environment.NewLine + e.Source + Environment.NewLine);
-
 
                 var innerException = e.InnerException;
                 while (innerException != null)
