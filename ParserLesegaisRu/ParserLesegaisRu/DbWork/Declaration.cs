@@ -1,23 +1,35 @@
-﻿namespace ParserLesegaisRu
+﻿using System.Text.Json.Serialization;
+
+namespace ParserLesegaisRu.DbWork
 {
     public class Declaration
     {
-        public static string DealNumberSiteColumnName = "dealNumber";
-        public static string SellerNameSiteColumnName= "sellerName";
-        public static string SellerINNSiteColumnName = "sellerInn";
-        public static string SellerVolumeSiteColumnName = "woodVolumeSeller";
-        public static string BuyerNameSiteColumnName = "buyerName";
-        public static string BuyerINNSiteColumnName = "buyerInn";
-        public static string BuyerVolumeSiteColumnName = "woodVolumeBuyer";
-        public static string DealDateSiteColumnName = "dealDate";
+        public Data Data;
+    }
 
+
+    public class Data
+    {
+        public SearchReportWoodDeal SearchReportWoodDeal;
+    };
+
+
+    public class SearchReportWoodDeal
+    {
+        public Deal[] Content;
+    }
+
+
+    [JsonNumberHandling(JsonNumberHandling.AllowNamedFloatingPointLiterals)]
+    public class Deal
+    {
         public string DealNumber;
-        public string DealDate;
         public string SellerName;
-        public string SellerINN;
-        public string SellerVolume;
+        public string SellerInn;
+        public decimal WoodVolumeSeller;
         public string BuyerName;
-        public string BuyerINN;
-        public string BuyerVolume;
+        public string BuyerInn;
+        public decimal WoodVolumeBuyer;
+        public string DealDate;
     }
 }

@@ -2,7 +2,7 @@
 {
     class DbCommand
     {
-        public const string DbName = "LesEgais";
+        public const string DbName = "LesEgais1";
         public const string AddDeclarationProcedureName = "AddDeclaration";
         public const string DealNumber = "DealNumber";
         public const string SellerName = "SellerName";
@@ -33,8 +33,8 @@
                     [" + SellerINN + @"] [nchar] (13) NOT NULL,
                     [" + BuyerName + @"] [nvarchar] (500) NOT NULL,
                     [" + BuyerINN + @"] [nchar] (13) NOT NULL,
-                    [" + SellerVolume + @"] [nvarchar](50) NOT NULL,
-                    [" + BuyerVolume + @"] [nvarchar](50) NOT NULL,                    
+                    [" + SellerVolume + @"] [decimal](18, 4) NULL,
+                    [" + BuyerVolume + @"] [decimal](18, 4) NULL,                    
                     CONSTRAINT[PK_Declaration] PRIMARY KEY CLUSTERED([DealNumber]
                 ))";
 
@@ -47,8 +47,8 @@
 	        @" + SellerINN + @" nchar(13),
             @" + BuyerName + @" nvarchar(500),
 	        @" + BuyerINN + @" nchar(13),
-            @" + SellerVolume + @" nvarchar(50),
-            @" + BuyerVolume + @" nvarchar(50)
+            @" + SellerVolume + @" decimal (18, 4),
+            @" + BuyerVolume + @" decimal (18, 4)
             AS
             BEGIN
                IF NOT EXISTS(SELECT 1 FROM Declaration WHERE DealNumber = @DealNumber)

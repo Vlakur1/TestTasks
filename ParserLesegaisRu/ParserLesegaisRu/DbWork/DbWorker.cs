@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using static ParserLesegaisRu.DbWork.DbCommand;
@@ -60,8 +59,7 @@ namespace ParserLesegaisRu.DbWork
             return (bool)command.ExecuteScalar();
         }
 
-
-        private void AddDeal(Declaration declaration, SqlConnection connection)
+        private void AddDeal(Deal deal, SqlConnection connection)
         {
 
             if (connection.State != ConnectionState.Open)
@@ -72,27 +70,26 @@ namespace ParserLesegaisRu.DbWork
             using var command = new SqlCommand(AddDeclarationProcedureName, connection);
             command.CommandType = CommandType.StoredProcedure;
 
-            command.Parameters.Add(DealNumber, SqlDbType.NVarChar).Value = declaration.DealNumber;
-            command.Parameters.Add(DealDate, SqlDbType.Date).Value = declaration.DealDate ?? Convert.DBNull;
-            command.Parameters.Add(SellerName, SqlDbType.NVarChar).Value = declaration.SellerName;
-            command.Parameters.Add(SellerINN, SqlDbType.NVarChar).Value = declaration.SellerINN;
-            command.Parameters.Add(BuyerName, SqlDbType.NVarChar).Value = declaration.BuyerName;
-            command.Parameters.Add(BuyerINN, SqlDbType.NVarChar).Value = declaration.BuyerINN;
-            command.Parameters.Add(BuyerVolume, SqlDbType.NVarChar).Value = declaration.BuyerVolume;
-            command.Parameters.Add(SellerVolume, SqlDbType.NVarChar).Value = declaration.SellerVolume;
+            command.Parameters.Add(DealNumber, SqlDbType.NVarChar).Value = deal.DealNumber;
+            command.Parameters.Add(DealDate, SqlDbType.Date).Value = deal.DealDate ?? Convert.DBNull;
+            command.Parameters.Add(SellerName, SqlDbType.NVarChar).Value = deal.SellerName ?? ""; ;
+            command.Parameters.Add(SellerINN, SqlDbType.NVarChar).Value = deal.SellerInn ?? "";
+            command.Parameters.Add(BuyerName, SqlDbType.NVarChar).Value = deal.BuyerName ?? "";
+            command.Parameters.Add(BuyerINN, SqlDbType.NVarChar).Value = deal.BuyerInn ?? ""; ;
+            command.Parameters.Add(BuyerVolume, SqlDbType.Decimal).Value = deal.WoodVolumeBuyer;
+            command.Parameters.Add(SellerVolume, SqlDbType.Decimal).Value = deal.WoodVolumeSeller;
 
             command.ExecuteNonQuery();
         }
 
-
-        public void AddDealRange(List<Declaration> declarations)
+        public void AddDealRange(Deal[] deals)
         {
             using var connection = new SqlConnection(_connectionString);
             try
             {
-                foreach (var declaration in declarations)
+                foreach (var deal in deals)
                 {
-                    AddDeal(declaration, connection);
+                    AddDeal(deal, connection);
                 }
             }
             finally
@@ -100,5 +97,5 @@ namespace ParserLesegaisRu.DbWork
                 connection.Close();
             }
         }
-    }
+     }
 }

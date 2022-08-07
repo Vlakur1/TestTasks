@@ -389,3 +389,4 @@ FodyWeavers.xsd
 
 # Folder for test projects
 /TestFolder/
+temp/
