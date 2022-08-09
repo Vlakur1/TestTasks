@@ -2,7 +2,7 @@
 {
     class DbCommand
     {
-        public const string DbName = "LesEgais1";
+        public const string DbName = "LesEgais11";
         public const string AddDeclarationProcedureName = "AddDeclaration";
         public const string DealNumber = "DealNumber";
         public const string SellerName = "SellerName";
@@ -38,7 +38,6 @@
                     CONSTRAINT[PK_Declaration] PRIMARY KEY CLUSTERED([DealNumber]
                 ))";
 
-
         public const string CreateAddDeclarationSoredProcedure =
             @"CREATE PROCEDURE[dbo]." + AddDeclarationProcedureName +
             " @" + DealNumber + @" nchar(28),
@@ -49,11 +48,25 @@
 	        @" + BuyerINN + @" nchar(13),
             @" + SellerVolume + @" decimal (18, 4),
             @" + BuyerVolume + @" decimal (18, 4)
-            AS
+                        AS
             BEGIN
-               IF NOT EXISTS(SELECT 1 FROM Declaration WHERE DealNumber = @DealNumber)
-                INSERT INTO Declaration(DealNumber, DealDate, SellerName, SellerINN,  BuyerName, BuyerINN, SellerVolume, BuyerVolume)
-                VALUES(@DealNumber, @DealDate, @SellerName, @SellerINN, @BuyerName, @BuyerINN, @SellerVolume, @BuyerVolume)
+              IF NOT EXISTS(SELECT 1 FROM Declaration WHERE DealNumber = @DealNumber)
+			  BEGIN
+                 INSERT INTO Declaration(DealNumber, DealDate, SellerName, SellerINN,  BuyerName, BuyerINN, SellerVolume, BuyerVolume)
+                 VALUES(@DealNumber, @DealDate, @SellerName, @SellerINN, @BuyerName, @BuyerINN, @SellerVolume, @BuyerVolume)
+			  END
+			  ELSE
+			  BEGIN
+                 UPDATE Declaration
+                 SET DealDate=IIF(NOT @DealDate IS NULL, @DealDate,DealDate),
+				 SellerName=IIF(NOT @SellerName IS NULL and LEN(@SellerName)<>0, @SellerName,SellerName), 
+				 SellerINN=IIF(NOT @SellerINN IS NULL and LEN(@SellerINN)<>0, @SellerINN,SellerINN), 
+				 BuyerName=IIF(NOT @BuyerName IS NULL and LEN(@BuyerName)<>0, @BuyerName,BuyerName), 
+				 BuyerINN=IIF(NOT @BuyerINN IS NULL and LEN(@BuyerINN)<>0, @BuyerINN,BuyerINN),
+				 SellerVolume=IIF(NOT @SellerVolume IS NULL and @SellerVolume<>0, @SellerVolume,SellerVolume), 
+				 BuyerVolume=IIF(@BuyerVolume<>0, @BuyerVolume,BuyerVolume)
+				 WHERE ( DealNumber = @DealNumber )
+				END
             END";
     }
 }

@@ -4,7 +4,6 @@ using System.Text.Json;
 using System.Net.Http.Json;
 using ParserLesegaisRu.DbWork;
 
-
 namespace ParserLesegaisRu
 {
     internal class Parser
@@ -19,6 +18,7 @@ namespace ParserLesegaisRu
 
         private readonly string _pageUrl;
         private readonly HttpClient _httpClient = new();
+
 
         public Parser(string pageUrl)
         {
@@ -56,7 +56,7 @@ namespace ParserLesegaisRu
 
                 isFetched = (dealsDataList.Length > 0);
             }
-            catch (JsonException e) // Invalid JSON
+            catch (JsonException e)
             {
                 Console.WriteLine("Invalid JSON." + e.Message);
                 throw;

@@ -2,7 +2,6 @@
 using System.Threading;
 using ParserLesegaisRu.DbWork;
 
-
 namespace ParserLesegaisRu
 {
     public class AppCore
@@ -22,6 +21,9 @@ namespace ParserLesegaisRu
         private const string CurentPageInformationTimeMessage = @"Page Num = {0}, Records: {1}-{2}";
         private const string StartWriteRecordsToDbMessage = @"Start adding rows to the database: ";
         private const string FinishWriteRecordsToDbMessage = @"Finish adding rows to the database: ";
+        private const string ExpendedTimeMessage = @"Expended Time: ";
+        private const string FormatTimeTemplate = "MM/dd/yyyy hh:mm:ss.fff tt";
+
 
         public void StartApplication()
         {
@@ -47,11 +49,13 @@ namespace ParserLesegaisRu
             while (parser.TryRequestData(currentPage, PageSize, out Deal[] dealsDataList) && Console.KeyAvailable == false)
             {
                 Console.WriteLine(CurentPageInformationTimeMessage, currentPage + 1, currentPage * PageSize, (currentPage + 1) * PageSize);
-                Console.WriteLine(StartWriteRecordsToDbMessage + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+                var startTime = DateTime.Now;
+                Console.WriteLine(StartWriteRecordsToDbMessage + startTime.ToString(FormatTimeTemplate));
 
                 dbWorker.AddDealRange(dealsDataList);
 
-                Console.WriteLine(FinishWriteRecordsToDbMessage + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + Environment.NewLine);
+                var finishTime = DateTime.Now;
+                Console.WriteLine(FinishWriteRecordsToDbMessage + finishTime.ToString(FormatTimeTemplate) + Environment.NewLine + ExpendedTimeMessage + (finishTime - startTime).ToString() + Environment.NewLine);
 
                 currentPage++;
             }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using static ParserLesegaisRu.DbWork.DbCommand;
@@ -82,14 +83,17 @@ namespace ParserLesegaisRu.DbWork
             command.ExecuteNonQuery();
         }
 
-        public void AddDealRange(Deal[] deals)
+        public void AddDealRange(IEnumerable<Deal> deals)
         {
             using var connection = new SqlConnection(_connectionString);
             try
             {
                 foreach (var deal in deals)
                 {
-                    AddDeal(deal, connection);
+                    if (deal.IsValid())
+                    {
+                        AddDeal(deal, connection);
+                    }
                 }
             }
             finally
